@@ -7,10 +7,14 @@ def load_csv_data():
     Prompts the user for a filename, checks if it exists, 
     and extracts all fields into a list of dictionaries.
     """
-    filename = input("Enter the name of the CSV file to process (e.g., grades.csv): ")
+    filename = input("Enter the name of the CSV file to process (e.g., grades.csv): ").strip() # i used strip to clean up any whitespace I might have in my code.
     
-    if not os.path.exists(filename):
-        print(f"Error: The file '{filename}' was not found.")
+    if not filename:
+        print("Error: Please provide a CSV filename.")
+        sys.exit(1)
+
+    if not os.path.isfile(filename):
+        print(f"Error: The file '{filename}' doesn't exist.")
         sys.exit(1)
         
     assignments = []
@@ -18,14 +22,40 @@ def load_csv_data():
     try:
         with open(filename, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
-            for row in reader:
+
+            requiredColumns = ['assignment', 'group', 'score', 'weight']
+            if reader.fieldnames is None:
+                print("Error: The CSV file is empty.")
+                sys.exit(1)
+            
+            for col in requiredColumns:
+                if col not in reader.fieldnames:
+                    print(f"Error: {col} column is missing from the CSV.")
+                    sys.exit(1)
+
+            for lineNo, row in enumerate(reader, start=2):
+                if not all(row.get(col) and row[col].strip() for col in requiredColumns):
+                    print(f"Error: We found a missing data in row {lineNo}: {row}")
+                    sys.exit(1)
+
+                try:
+                    score = float(row['score'])
+                    weight = float(row['weight'])
+                except ValueError:
+                    print(f"Error: Invalid numeric value in row {lineNo}: {row}")
+                    sys.exit(1)
                 # Convert numeric fields to floats for calculations
                 assignments.append({
                     'assignment': row['assignment'],
                     'group': row['group'],
-                    'score': float(row['score']),
-                    'weight': float(row['weight'])
+                    'score': score,
+                    'weight': weight
                 })
+
+                # i also added a check to handle the case where the assignment does not exist.
+                if not assignments:
+                    print("Error: The CSV file doesn't have any assignments.")
+                    sys.exit(1)
         return assignments
     except Exception as e:
         print(f"An error occurred while reading the file: {e}")
