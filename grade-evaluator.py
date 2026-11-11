@@ -78,12 +78,12 @@ def evaluate_grades(data):
 
             print(f"Error: Invalid score for assignment '{assignment['assignment']}'. It is out of range (0-100): {score}")
             sys.exit(1)
-    print("All scores are valid and are between (0-100).")
 
-    if assignment['group'] not in [ 'Formative', 'Summative']:
-        print(f"Error: Invalid group for assignment '{assignment['assignment']}'. It should be either 'Formative' or 'Summative'.")
-        sys.exit(1)
-    # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
+        if assignment['group'] not in [ 'Formative', 'Summative']:
+            print(f"Error: Invalid group for assignment '{assignment['assignment']}'. It should be either 'Formative' or 'Summative'.")
+            sys.exit(1)
+    print("All scores are valid and are between (0-100).")
+    # done with :) b) Validate total weights (Total=100, Summative=40, Formative=60)
     
     formative =  0.0
     summative = 0.0
@@ -113,7 +113,20 @@ def evaluate_grades(data):
         print(f"Error: The total summative weight is {summative}, but it should be 40.")
         sys.exit(1)
 
-    # TODO: c) Calculate the Final Grade and GPA
+    #  c) Calculate the Final Grade and GPA
+    total_grade = 0.0
+
+    for assignment in data:
+        score = assignment['score']
+        weight = assignment['weight']
+
+        contribution = (score * weight) / 100
+        total_grade += contribution
+    Gpa = (total_grade / 100) * 5.0
+
+    
+    print (f"\nFinal Grade: {FinalGrade:.2f}%")
+    print (f"GPA: {Gpa:.2f} / 5.00")
     # TODO: d) Determine Pass/Fail status (>= 50% in BOTH categories)
     # TODO: e) Check for failed formative assignments (< 50%)
     #          and determine which one(s) have the highest weight for resubmission.
