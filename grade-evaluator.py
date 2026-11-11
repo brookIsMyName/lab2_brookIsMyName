@@ -1,6 +1,7 @@
 import csv
 import sys
 import os
+import math
 
 def load_csv_data():
     """
@@ -68,7 +69,7 @@ def evaluate_grades(data):
     """
     print("\n--- Processing Grades ---")
     
-    # TODO: a) Check if all scores are percentage based (0-100)
+    # did .... a) Check if all scores are percentage based (0-100)
     
     for assignment in data:
         score = assignment['score']
@@ -83,6 +84,35 @@ def evaluate_grades(data):
         print(f"Error: Invalid group for assignment '{assignment['assignment']}'. It should be either 'Formative' or 'Summative'.")
         sys.exit(1)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
+    
+    formative =  0.0
+    summative = 0.0
+
+    for assignment in data:
+        weight = assignment['weight']
+
+        if not (0 <= weight <= 100):
+            print(f"Error: Invalid weight {weight} for assignment '{assignment['assignment']}'. It is out of range (0-100): {weight}")
+            sys.exit(1)
+        if assignment['group'] == 'Formative':
+            formative += weight
+        elif assignment['group'] == 'Summative':
+            summative += weight
+    total = formative + summative
+    if not math.isclose(total, 100.0, rel_tol=0, abs_tol=1e-9):
+        print(f"Error: The total weight is {total}, but it should be 100.")
+        sys.exit(1)
+
+# Check the formative weight
+    if not math.isclose(formative, 60.0, rel_tol=0, abs_tol=1e-9):
+        print(f"Error: The total formative weight is {formative}, but it should be 60.")
+        sys.exit(1)
+
+    # Check the summative weight
+    if not math.isclose(summative, 40.0, rel_tol=0, abs_tol=1e-9):
+        print(f"Error: The total summative weight is {summative}, but it should be 40.")
+        sys.exit(1)
+
     # TODO: c) Calculate the Final Grade and GPA
     # TODO: d) Determine Pass/Fail status (>= 50% in BOTH categories)
     # TODO: e) Check for failed formative assignments (< 50%)
