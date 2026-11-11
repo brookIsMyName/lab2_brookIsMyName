@@ -69,6 +69,19 @@ def evaluate_grades(data):
     print("\n--- Processing Grades ---")
     
     # TODO: a) Check if all scores are percentage based (0-100)
+    
+    for assignment in data:
+        score = assignment['score']
+
+        if not(0 <= score <= 100):
+
+            print(f"Error: Invalid score for assignment '{assignment['assignment']}'. It is out of range (0-100): {score}")
+            sys.exit(1)
+    print("All scores are valid and are between (0-100).")
+
+    if assignment['group'] not in [ 'Formative', 'Summative']:
+        print(f"Error: Invalid group for assignment '{assignment['assignment']}'. It should be either 'Formative' or 'Summative'.")
+        sys.exit(1)
     # TODO: b) Validate total weights (Total=100, Summative=40, Formative=60)
     # TODO: c) Calculate the Final Grade and GPA
     # TODO: d) Determine Pass/Fail status (>= 50% in BOTH categories)
