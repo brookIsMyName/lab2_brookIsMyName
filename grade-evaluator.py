@@ -149,10 +149,31 @@ def evaluate_grades(data):
 
     # TODO: e) Check for failed formative assignments (< 50%)
     #          and determine which one(s) have the highest weight for resubmission.
+    
+    failedFormative = []
+
+    for assignment in data:
+        if assignment['group'] == 'Formative' and assignment['score'] < 50.0:
+            failedFormative.append(assignment)
+    
+    resubmissionOptions = sorted(failedFormative, key=lambda x: x['weight'], reverse=True)
+    
+    if resubmissionOptions:
+        highestweight = resubmissionOptions[0]['weight']
+
+        print("\nResubmission Options: ")
+
+        for assignment in resubmissionOptions:
+            if assignment['weight'] == highestweight:
+                print(f"- {assignment['assignment']} (Score: {assignment['score']}%, Weight: {assignment['weight']}%)")   
+            else:
+                break
+    else:
+        print("\nNo failed formative assignments for resubmission.")
+
     # TODO: f) Print the final decision (PASSED / FAILED) and resubmission options
     
     pass
-
 if __name__ == "__main__":
     # 1. Load the data
     course_data = load_csv_data()
